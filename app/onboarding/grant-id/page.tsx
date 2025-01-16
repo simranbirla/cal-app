@@ -18,7 +18,7 @@ export default function OnBoardingGrantItRoutePage() {
                 </CardHeader>
                 <CardContent>
                     <Button className='w-full' asChild>
-                        <Link href={'/'}>
+                        <Link href={'/api/auth'}>
                             <CalendarCheck2 className='size-4 mr-2' />
                             Connect Calender to your account</Link>
 
