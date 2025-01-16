@@ -42,5 +42,5 @@ export const onBoardingAction = async (prevState: any, formData: FormData) => {
     })
 
 
-    return redirect('dashboard')
+    return redirect('/dashboard')
 }
