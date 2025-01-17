@@ -2,6 +2,7 @@ import React from 'react'
 import { requireUser } from '../lib/hooks'
 import { redirect } from 'next/navigation';
 import { prisma } from '../lib/db';
+import { EmptyState } from '../components/EmptyState';
 
 async function getData(id: string) {
     const data = await prisma.user.findUnique({
@@ -9,6 +10,18 @@ async function getData(id: string) {
             id: id,
         },
         select: {
+            eventType: {
+                select: {
+                    id: true,
+                    active: true,
+                    title: true,
+                    url: true,
+                    duration: true,
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            },
             username: true,
             grantId: true,
         },
@@ -29,9 +42,16 @@ async function getData(id: string) {
 export default async function DashboardPage() {
     const session = await requireUser()
 
-    await getData(session.user?.id as string);
+    const data = await getData(session.user?.id as string);
 
     return (
-        <div>Dashboard</div>
+        <div>
+            {data.eventType.length === 0 ? <EmptyState
+                title="You have no Event Types"
+                description="You can create your first event type by clicking the button below."
+                buttonText="Add Event Type"
+                href="/dashboard/new"
+            /> : <></>}
+        </div>
     )
 }
