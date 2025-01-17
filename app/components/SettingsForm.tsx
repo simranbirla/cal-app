@@ -12,6 +12,8 @@ import { settingsSchema } from '../lib/zodSchema'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
+import { UploadDropzone } from '../lib/uploadthing'
+import { toast } from 'sonner'
 
 interface ISettingsForm {
     name: string,
@@ -63,6 +65,7 @@ export default function SettingsForm({ email, name, image }: ISettingsForm) {
                     </div>
                     <div className='grid gap-y-2'>
                         <Label>Profile Image</Label>
+                        <input type='hidden' name={fields.image.name} key={fields.image.key} value={currentImage} />
                         {currentImage ? (
                             <div className="relative size-16">
                                 <Image
@@ -83,20 +86,20 @@ export default function SettingsForm({ email, name, image }: ISettingsForm) {
                                 </Button>
                             </div>
                         ) : (
-                            //   <UploadDropzone
-                            //     endpoint="imageUploader"
-                            //     appearance={{
-                            //       container: "border-muted",
-                            //     }}
-                            //     onClientUploadComplete={(res) => {
-                            //       setCurrentImage(res[0].url);
-                            //       toast.success("Profile image uploaded");
-                            //     }}
-                            //     onUploadError={(error) => {
-                            //       toast.error(error.message);
-                            //     }}
-                            //   />
-                            <h1>NOthing here</h1>
+                            <UploadDropzone
+                                endpoint="imageUploader"
+                                appearance={{
+                                    container: "border-muted",
+                                }}
+                                onClientUploadComplete={(res) => {
+                                    setCurrentImage(res[0].url);
+                                    toast.success("Profile image uploaded");
+                                }}
+                                onUploadError={(error) => {
+                                    toast.error(error.message);
+                                }}
+                            />
+
                         )}
                         <p className="text-red-500 text-sm">{fields.image.errors}</p>
                     </div>

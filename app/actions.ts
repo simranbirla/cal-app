@@ -46,6 +46,8 @@ export const onBoardingAction = async (prevState: any, formData: FormData) => {
 }
 
 export const settingsAction = async (prevState: any, formData: FormData) => {
+
+    console.log(formData)
     const session = await requireUser()
 
 

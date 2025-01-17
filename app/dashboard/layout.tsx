@@ -10,6 +10,8 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { signOut } from '../lib/auth';
 import { requireUser } from '../lib/hooks';
+import { Toaster } from "@/components/ui/sonner"
+
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode; }) {
     const session = await requireUser()
@@ -77,6 +79,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     </main>
                 </div>
             </div>
+            <Toaster richColors />
         </>
 
     )
