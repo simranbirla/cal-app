@@ -40,3 +40,8 @@ export const onBoardingSchemaValidation = (options?: {
         )
     })
 }
+
+export const settingsSchema = z.object({
+    fullName: z.string().min(3).max(150),
+    image: z.string()
+})
