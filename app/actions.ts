@@ -198,3 +198,40 @@ export const createEventTypeAction = async (prevState: any, formData: FormData) 
 
 
 }
+
+export async function updateEventTypeStatusAction(
+    prevState: any,
+    {
+        eventTypeId,
+        isChecked,
+    }: {
+        eventTypeId: string;
+        isChecked: boolean;
+    }
+) {
+    try {
+        const session = await requireUser();
+
+        await prisma.eventType.update({
+            where: {
+                id: eventTypeId,
+                userId: session.user?.id as string,
+            },
+            data: {
+                active: isChecked,
+            },
+        });
+
+        revalidatePath(`/dashboard`);
+        return {
+            status: "success",
+            message: "EventType Status updated successfully",
+        };
+    } catch (error) {
+        console.log('Error while updating event type', error)
+        return {
+            status: "error",
+            message: "Something went wrong",
+        };
+    }
+}
