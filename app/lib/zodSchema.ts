@@ -45,3 +45,45 @@ export const settingsSchema = z.object({
     fullName: z.string().min(3).max(150),
     image: z.string()
 })
+
+export const eventTypeSchema = z.object({
+    title: z.string().min(3).max(150),
+    duration: z.number().min(1).max(100),
+    url: z.string().min(3).max(150),
+    description: z.string().min(3).max(300),
+    videoCallSoftware: z.string(),
+});
+
+
+export const eventTypeServerSchemaValidation = (options?: {
+    isUrlUnique: () => Promise<boolean>
+}) => {
+    return z.object({
+        title: z.string().min(3).max(150),
+        duration: z.number().min(1).max(100),
+        description: z.string().min(3).max(300),
+        videoCallSoftware: z.string(),
+        url: z.string().min(3).max(150).pipe(
+            z.string().superRefine((_, ctx) => {
+                if (typeof options?.isUrlUnique !== "function") {
+                    ctx.addIssue({
+                        code: 'custom',
+                        message: conformZodMessage.VALIDATION_UNDEFINED,
+                        fatal: true
+                    })
+
+                    return;
+                }
+
+                return options.isUrlUnique().then((isUnique) => {
+                    if (!isUnique) {
+                        ctx.addIssue({
+                            code: "custom",
+                            message: "Url is already used",
+                        });
+                    }
+                });
+            })
+        )
+    })
+}
