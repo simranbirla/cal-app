@@ -13,6 +13,9 @@ const getData = async (userId: string) => {
     const data = await prisma.availability.findMany({
         where: {
             userId
+        },
+        orderBy: {
+            createdAt: 'asc'
         }
     });
 

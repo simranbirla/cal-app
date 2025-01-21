@@ -45,10 +45,23 @@ async function getData(username: string, eventName: string) {
     return eventType;
 }
 
-export default async function BookingForm({ params }: { params: { username: string; eventName: string } }) {
+export default async function BookingForm({ params, searchParams }: { params: { username: string; eventName: string }, searchParams: { date?: string, time?: string } }) {
     const { username, eventName } = await params
+    const { date, time } = await searchParams
 
     const data = await getData(username, eventName)
+
+    const selectedDate = date
+        ? new Date(date)
+        : new Date();
+
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+    }).format(selectedDate);
+
+    const showForm = !!date && !!time;
 
     return (
         <div className='min-h-screen w-full flex items-center justify-center'>
@@ -69,7 +82,7 @@ export default async function BookingForm({ params }: { params: { username: stri
                             <p className="flex items-center">
                                 <CalendarX2 className="size-4 mr-2 text-primary" />
                                 <span className="text-sm font-medium text-muted-foreground">
-                                    {'23/09/2024'}
+                                    {formattedDate}
                                 </span>
                             </p>
                             <p className="flex items-center">
@@ -94,6 +107,7 @@ export default async function BookingForm({ params }: { params: { username: stri
                     />
 
                     <RenderCalendar daysofWeek={data.User?.availability ?? []} />
+                    <Separator orientation='vertical' className='h-full w-[1px]' />
                 </CardContent>
                 <CardHeader></CardHeader>
             </Card>
