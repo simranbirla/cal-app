@@ -1,4 +1,5 @@
 import RenderCalendar from '@/app/components/calendar/RenderCalendar';
+import TimeTable from '@/app/components/TimeTable';
 import { prisma } from '@/app/lib/db';
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator';
@@ -47,7 +48,7 @@ async function getData(username: string, eventName: string) {
 
 export default async function BookingForm({ params, searchParams }: { params: { username: string; eventName: string }, searchParams: { date?: string, time?: string } }) {
     const { username, eventName } = await params
-    const { date, time } = await searchParams
+    const { date } = await searchParams
 
     const data = await getData(username, eventName)
 
@@ -61,7 +62,7 @@ export default async function BookingForm({ params, searchParams }: { params: { 
         month: "long",
     }).format(selectedDate);
 
-    const showForm = !!date && !!time;
+    // const showForm = !!date && !!time;
 
     return (
         <div className='min-h-screen w-full flex items-center justify-center'>
@@ -108,6 +109,7 @@ export default async function BookingForm({ params, searchParams }: { params: { 
 
                     <RenderCalendar daysofWeek={data.User?.availability ?? []} />
                     <Separator orientation='vertical' className='h-full w-[1px]' />
+                    <TimeTable selectedDate={selectedDate} />
                 </CardContent>
                 <CardHeader></CardHeader>
             </Card>
