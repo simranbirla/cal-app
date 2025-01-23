@@ -29,18 +29,14 @@ interface IEventTypeForm {
 export default function EventTypeForm({ id, title, description, url, duration, callProvider }: IEventTypeForm) {
     const [lastResult, action] = useActionState(editEventTypeAction, undefined);
     const [form, fields] = useForm({
-        // Sync the result of last submission
         lastResult,
-
-        // Reuse the validation logic on the client
         onValidate({ formData }) {
             return parseWithZod(formData, { schema: eventTypeSchema });
         },
-
-        // Validate the form on blur event triggered
         shouldValidate: "onBlur",
         shouldRevalidate: "onInput",
     });
+
     const [activePlatform, setActivePlatform] = useState<Platform>(
         callProvider as Platform
     );
@@ -48,6 +44,7 @@ export default function EventTypeForm({ id, title, description, url, duration, c
     const togglePlatform = (platform: Platform) => {
         setActivePlatform(platform);
     };
+
     return (
         <div className="h-full w-full flex-1 flex flex-col items-center justify-center">
             <Card>
