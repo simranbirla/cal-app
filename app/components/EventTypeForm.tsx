@@ -1,25 +1,38 @@
-"use client"
+'use client'
 
-import { createEventTypeAction } from '@/app/actions';
-import { SubmitButton } from '@/app/components/SubmitButtons';
-import { eventTypeSchema } from '@/app/lib/zodSchema';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useActionState, useState } from 'react'
+import { SubmitButton } from './SubmitButtons';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Platform } from '@/lib/utils';
-import { useForm } from '@conform-to/react';
+import { Input } from '@/components/ui/input';
 import { parseWithZod } from '@conform-to/zod';
-import Link from 'next/link';
-import React, { useActionState, useState } from 'react'
+import { useForm } from '@conform-to/react';
+import { eventTypeSchema } from '../lib/zodSchema';
+import { Platform } from '@/lib/utils';
+import { editEventTypeAction } from '../actions';
 
-export default function NewEvent() {
-    const [lastResult, action] = useActionState(createEventTypeAction, undefined);
+interface IEventTypeForm {
+    id: string;
+    title: string;
+    url: string;
+    description: string;
+    duration: number;
+    callProvider: string;
+}
+
+
+export default function EventTypeForm({ id, title, description, url, duration, callProvider }: IEventTypeForm) {
+    const [lastResult, action] = useActionState(editEventTypeAction, undefined);
     const [form, fields] = useForm({
+        // Sync the result of last submission
         lastResult,
+
+        // Reuse the validation logic on the client
         onValidate({ formData }) {
             return parseWithZod(formData, { schema: eventTypeSchema });
         },
@@ -28,12 +41,13 @@ export default function NewEvent() {
         shouldValidate: "onBlur",
         shouldRevalidate: "onInput",
     });
-    const [activePlatform, setActivePlatform] = useState<Platform>("Google Meet");
+    const [activePlatform, setActivePlatform] = useState<Platform>(
+        callProvider as Platform
+    );
 
     const togglePlatform = (platform: Platform) => {
         setActivePlatform(platform);
     };
-
     return (
         <div className="h-full w-full flex-1 flex flex-col items-center justify-center">
             <Card>
@@ -44,28 +58,29 @@ export default function NewEvent() {
                     </CardDescription>
                 </CardHeader>
                 <form noValidate id={form.id} onSubmit={form.onSubmit} action={action}>
+                    <input type="hidden" name="id" value={id} />
                     <CardContent className="grid gap-y-5">
                         <div className="flex flex-col gap-y-2">
                             <Label>Title</Label>
                             <Input
                                 name={fields.title.name}
                                 key={fields.title.key}
-                                defaultValue={fields.title.initialValue}
+                                defaultValue={title}
                                 placeholder="30 min meeting"
                             />
                             <p className="text-red-500 text-sm">{fields.title.errors}</p>
                         </div>
 
                         <div className="grid gap-y-2 ">
-                            <Label>URL Slug</Label>
+                            <Label>Url</Label>
                             <div className="flex rounded-md">
                                 <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-muted bg-muted text-muted-foreground text-sm">
-                                    CalApp.com/
+                                    CalMarshal.com/
                                 </span>
                                 <Input
                                     type="text"
                                     key={fields.url.key}
-                                    defaultValue={fields.url.initialValue}
+                                    defaultValue={url}
                                     name={fields.url.name}
                                     placeholder="example-user-1"
                                     className="rounded-l-none"
@@ -80,7 +95,7 @@ export default function NewEvent() {
                             <Textarea
                                 name={fields.description.name}
                                 key={fields.description.key}
-                                defaultValue={fields.description.initialValue}
+                                defaultValue={description}
                                 placeholder="30 min meeting"
                             />
                             <p className="text-red-500 text-sm">
@@ -93,7 +108,7 @@ export default function NewEvent() {
                             <Select
                                 name={fields.duration.name}
                                 key={fields.duration.key}
-                                defaultValue={fields.duration.initialValue}
+                                defaultValue={String(duration)}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select the duration" />
@@ -159,11 +174,10 @@ export default function NewEvent() {
                         <Button asChild variant="secondary">
                             <Link href="/dashboard">Cancel</Link>
                         </Button>
-                        <SubmitButton text="Create Event Type" />
+                        <SubmitButton text="Edit Event Type" />
                     </CardFooter>
                 </form>
             </Card>
         </div>
     );
-
 }
