@@ -7,6 +7,7 @@ import { parseWithZod } from '@conform-to/zod'
 import { eventTypeServerSchemaValidation, onBoardingSchemaValidation, settingsSchema } from "./lib/zodSchema"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { nylas } from "./lib/nylas"
 
 export const onBoardingAction = async (prevState: any, formData: FormData) => {
     const session = await requireUser()
@@ -234,4 +235,75 @@ export async function updateEventTypeStatusAction(
             message: "Something went wrong",
         };
     }
+}
+
+export const createMeetingAction = async (formData: FormData) => {
+    const userData = await prisma.user.findUnique({
+        where: {
+            username: formData.get("username") as string
+        },
+        select: {
+            grantEmail: true,
+            grantId: true
+        }
+    })
+
+
+    if (!userData) {
+        throw new Error("User not found")
+    }
+
+    const eventType = await prisma.eventType.findUnique({
+        where: {
+            id: formData.get("eventTypeId") as string
+        },
+        select: {
+            title: true,
+            description: true
+        }
+    })
+
+
+    const formTime = formData.get("fromTime") as string;
+    const duration = Number(formData.get("duration"));
+    const eventDate = formData.get("eventDate") as string;
+
+    const startDateTime = new Date(`${eventDate}T${formTime}:00`);
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+    const provider = formData.get("provider") as any
+
+
+
+
+    const event = await nylas.events.create({
+        identifier: userData.grantId as string,
+        requestBody: {
+            title: eventType?.title,
+            description: eventType?.description,
+            when: {
+                startTime: Math.floor(startDateTime.getTime() / 1000),
+                endTime: Math.floor(endDateTime.getTime() / 1000),
+            },
+            conferencing: {
+                autocreate: {},
+                provider,
+            },
+            participants: [
+                {
+                    name: formData.get("name") as string,
+                    email: formData.get("email") as string,
+                    status: "yes",
+                },
+            ],
+        },
+        queryParams: {
+            calendarId: userData?.grantEmail as string,
+            notifyParticipants: true,
+        }
+    })
+
+    console.log(event)
+
+    return redirect("/success");
+
 }
