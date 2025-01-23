@@ -11,8 +11,7 @@ import Link from "next/link";
 import React from "react";
 
 const DeleteEventType = async ({ params }: { params: Promise<{ eventTypeId: string }> }) => {
-    const { eventTypeId } = await params;
-
+    const { eventTypeId } = await params
     return (
         <div className="flex-1 flex items-center justify-center">
             <Card>
