@@ -50,7 +50,7 @@ async function getData(username: string, eventName: string) {
     return eventType;
 }
 
-export default async function BookingForm({ params, searchParams }: { params: { username: string; eventName: string }, searchParams: { date?: string, time?: string } }) {
+export default async function BookingForm({ params, searchParams }: { params: Promise<{ username: string; eventName: string }>, searchParams: Promise<{ date?: string, time?: string }> }) {
     const { username, eventName } = await params
     const { date, time } = await searchParams
 

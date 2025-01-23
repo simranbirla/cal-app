@@ -27,7 +27,7 @@ const getData = async (eventId: string) => {
     return data;
 }
 
-export default async function EditEventPage({ params }: { params: { eventTypeId: string } }) {
+export default async function EditEventPage({ params }: { params: Promise<{ eventTypeId: string }> }) {
     const { eventTypeId } = await params
     const data = await getData(eventTypeId);
 
