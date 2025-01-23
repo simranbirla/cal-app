@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-const DeleteEventType = ({ params }: { params: Promise<{ eventTypeId: string }> }) => {
+const DeleteEventType = ({ params }: { params: { eventTypeId: string } }) => {
     return (
         <div className="flex-1 flex items-center justify-center">
             <Card>
