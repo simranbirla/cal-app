@@ -12,6 +12,8 @@ import { Video } from 'lucide-react';
 import React from 'react'
 
 async function getData(userId: string) {
+    const unixStartDate = (Math.floor((new Date().getTime()) / 1000)).toString()
+
     const userData = await prisma.user.findUnique({
         where: {
             id: userId,
@@ -29,6 +31,7 @@ async function getData(userId: string) {
         identifier: userData?.grantId as string,
         queryParams: {
             calendarId: userData?.grantEmail as string,
+            start: unixStartDate
         },
     });
 
