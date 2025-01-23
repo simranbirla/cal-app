@@ -10,7 +10,9 @@ import {
 import Link from "next/link";
 import React from "react";
 
-const DeleteEventType = ({ params }: { params: { eventTypeId: string } }) => {
+const DeleteEventType = async ({ params }: { params: Promise<{ eventTypeId: string }> }) => {
+    const { eventTypeId } = await params;
+
     return (
         <div className="flex-1 flex items-center justify-center">
             <Card>
@@ -25,7 +27,7 @@ const DeleteEventType = ({ params }: { params: { eventTypeId: string } }) => {
                         <Link href="/dashboard">Cancel</Link>
                     </Button>
                     <form action={deleteEventTypeAction}>
-                        <input type="hidden" name="id" value={params.eventTypeId} />
+                        <input type="hidden" name="id" value={eventTypeId} />
                         <Button variant="destructive">Delete</Button>
                     </form>
                 </CardFooter>
